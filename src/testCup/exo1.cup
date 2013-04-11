@@ -1,0 +1,54 @@
+package testCup;
+import java_cup.runtime.*;
+
+/* inclusion du code */
+	parser code {:
+	public void report_error(String message, Object info) {
+	String m = "Erreur de syntaxe.";
+	
+	if (info instanceof Symbol) {
+		Symbol s = ((Symbol) info); 
+		
+	if (s.left >= 0) /* Numéro de ligne */
+	m = m + " ligne : " + (s.left+1);
+	}
+	
+	System.out.println(m);
+	}
+:} ;
+
+
+/* symboles terminaux */
+
+	terminal PLUS, MOINS, MULT, DIVIDE, PAR_G, PAR_D,  
+	POINT_VIRGULE;
+	terminal Integer ENTIER;
+
+
+/* non terminaux */
+	
+	non terminal seq_expressions, expression;
+	non terminal Integer expr;
+
+
+/* Precedences */
+
+	precedence left PLUS, MOINS;
+	precedence left MULT, DIVIDE ;
+
+
+/* grammaire */
+		seq_expressions::= expression seq_expressions | expression ;
+		expression::= expr:e {: System.out.println
+		("Eval="+e.intValue()); :} POINT_VIRGULE |
+		error POINT_VIRGULE ;
+		expr::=expr:e1 PLUS expr:e2 
+		{: RESULT=new Integer(e1.intValue()+e2.intValue()); :} |
+		expr:e1 MOINS expr:e2 
+		{: RESULT=new Integer(e1.intValue()-e2.intValue()); :} |
+		expr:e1 MULT expr:e2
+		{: RESULT=new Integer(e1.intValue()*e2.intValue()); :} |
+		expr:e1 DIVIDE expr:e2 
+		{: RESULT=new Integer(e1.intValue()/e2.intValue()); :} | 
+		ENTIER:n {: RESULT=n; :} | 
+		PAR_G expr:e PAR_D {: RESULT=e; :} ;

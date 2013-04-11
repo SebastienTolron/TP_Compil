@@ -1,0 +1,40 @@
+<project name="CompileCup" default="run" basedir=".">
+	<property name= "sourceCup" value= "src/testCup/exo1.cup"/>
+	<property name= "source" 	value= "src/testCup/source.txt"/>
+	<property name= "executable" value= "testCup.Exo1Main"/>	
+
+	<target name="cup-task">
+		<java jar="../java-cup-11a.jar" fork="true">
+			<classpath>
+				<pathelement path="java_cup.Main"/>
+			</classpath>
+			<arg value="-dump" />
+			<arg value="${sourceCup}" />
+		</java>
+	</target>
+	
+	<target name="deplacer">
+		<move file="parser.java" todir="src/testCup" />
+		<move file="sym.java" todir="src/testCup" />
+	</target>
+	
+	<target name="compile" description="Compilation des classes">
+		<javac srcdir="src" classpath="../java-cup-11a.jar" >
+		</javac>
+	</target>
+	
+	<target name="execute" description="Execution du main" >
+		<java classname="${executable}" fork="true">
+			<classpath>
+				<pathelement path="bin"/>
+				<pathelement path="../java-cup-11a.jar"/>
+			</classpath>
+			<arg value="${source}" />
+		</java>
+	</target>
+	
+	<target name="run" depends="cup-task,deplacer,compile,execute">
+		
+	</target>
+	
+</project>
